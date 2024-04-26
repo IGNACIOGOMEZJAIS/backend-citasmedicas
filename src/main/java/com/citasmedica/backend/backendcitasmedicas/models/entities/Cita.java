@@ -22,6 +22,7 @@ public class Cita {
     private String recetaMedica;
     private String pacient;
     private Long idPaciente;
+    private Long tardanza;
 
     public Long getIdCita() {
         return idCita;
@@ -76,6 +77,12 @@ public class Cita {
     }
     public void setIdPaciente(Long idPaciente) {
         this.idPaciente = idPaciente;
+    }
+    public Long getTardanza() {
+        return tardanza;
+    }
+    public void setTardanza(Long tardanza) {
+        this.tardanza = tardanza;
     }
    
     
