@@ -78,7 +78,7 @@ public class CitaController {
         return ResponseEntity.notFound().build();
 
     }
-    @PutMapping("/tardanza/{idCita}")
+    @PutMapping("/citacurso/{idCita}")
     public ResponseEntity<?> sumarTardanzasDeTurno(@RequestBody Cita cita, @PathVariable Long idCita) {
         Optional<Cita> o = service.sumarTardanzasDeTurno(cita, idCita);
         if (o.isPresent()) {

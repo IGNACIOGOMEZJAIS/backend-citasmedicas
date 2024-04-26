@@ -1,4 +1,5 @@
 package com.citasmedica.backend.backendcitasmedicas.services;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,14 +48,19 @@ public class CitaServiceImpl implements CitasService {
             Cita citaDb = o.orElseThrow();
             Long tardanzasTotales = 0L; 
             tardanzasTotales = tardanzasTotales + cita.getTardanza();
+            LocalDate fechaCita = cita.getFecha();
             
             List<Cita> citasDelTurno = (List<Cita>) repository.findAll();
             
             // Calcular la suma de todas las tardanzas
             for (Cita c  : citasDelTurno) {
+                c.setEstado("Terminado");
+                if (!c.getIdCita().equals(idCita) && c.getIdCita() > idCita) {
                 c.setHora(c.getHora().plusMinutes(tardanzasTotales));
+                c.setEstado("Retrasado");
                 citaOptional = this.save(c);
             }
+        }
             
             // // Actualizar las tardanzas de las citas restantes en el mismo turno
             // for (Cita c : citasDelTurno) {
