@@ -1,5 +1,4 @@
 package com.citasmedica.backend.backendcitasmedicas.services;
-import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,37 +38,32 @@ public class CitaServiceImpl implements CitasService {
     }
     
 
-@Override
-@Transactional
-public Optional<Cita> sumarTardanzasDeTurno(Cita cita,Long idCita) {
-    Optional<Cita> o = this.findById(idCita);
-    Cita citaOptional = null;
-    if (o.isPresent()) {
-        Cita citaDb = o.orElseThrow();
-        Long tardanzasTotales = cita.getTardanza();
-        LocalTime horaCita = cita.getHora();
-        
-        
-        List<Cita> citasDelTurno = (List<Cita>) repository.findAll();
-        
-        // Calcular la suma de todas las tardanzas
-        for (Cita c : citasDelTurno) {
+    @Override
+    @Transactional
+    public Optional<Cita> sumarTardanzasDeTurno(Cita cita, Long idCita) {
+        Optional<Cita> o = this.findById(idCita);
+        Cita citaOptional = null;
+        if (o.isPresent()) {
+            Cita citaDb = o.orElseThrow();
+            Long tardanzasTotales = 0L; 
+            tardanzasTotales = tardanzasTotales + cita.getTardanza();
             
-        
-            tardanzasTotales = c.getTardanza();
-            horaCita.plusMinutes(tardanzasTotales);
+            List<Cita> citasDelTurno = (List<Cita>) repository.findAll();
+            
+            // Calcular la suma de todas las tardanzas
+            for (Cita c  : citasDelTurno) {
+                c.setHora(c.getHora().plusMinutes(tardanzasTotales));
+                citaOptional = this.save(c);
+            }
+            
+            // // Actualizar las tardanzas de las citas restantes en el mismo turno
+            // for (Cita c : citasDelTurno) {
+            //     c.setTardanza(tardanzasTotales); // Establece la misma suma de tardanzas para todas las citas
+            //     // No estoy seguro de qué estás intentando hacer con esta línea. Si quieres guardar la cita actual, deberías usar 'c' en lugar de 'citaDb'
+            //     citaOptional = this.save(citaDb);
+            // }
         }
-        
-        // Actualizar las tardanzas de las citas restantes en el mismo turno
-        for (Cita c : citasDelTurno) {
-            c.setTardanza(tardanzasTotales);
-            citaOptional = this.save(citaDb);
-        }
-        
+        return Optional.ofNullable(citaOptional);
     }
-    return Optional.ofNullable(citaOptional);
-
     
-
-}
 }
