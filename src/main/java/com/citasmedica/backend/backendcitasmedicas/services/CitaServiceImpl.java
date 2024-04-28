@@ -1,5 +1,5 @@
 package com.citasmedica.backend.backendcitasmedicas.services;
-import java.time.LocalDate;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +14,7 @@ public class CitaServiceImpl implements CitasService {
 
     @Autowired
     private CitaRepository repository;
+    @Autowired
 
     @Override
     @Transactional(readOnly = true)
@@ -48,28 +49,33 @@ public class CitaServiceImpl implements CitasService {
             Cita citaDb = o.orElseThrow();
             Long tardanzasTotales = 0L; 
             tardanzasTotales = tardanzasTotales + cita.getTardanza();
-            LocalDate fechaCita = cita.getFecha();
+            Date fechaCita = cita.getFecha();
+            System.out.println(fechaCita);
+            
             
             List<Cita> citasDelTurno = (List<Cita>) repository.findAll();
             
             // Calcular la suma de todas las tardanzas
             for (Cita c  : citasDelTurno) {
                 c.setEstado("Terminado");
-                if (!c.getIdCita().equals(idCita) && c.getIdCita() > idCita) {
+                if (!c.getIdCita().equals(idCita) ) {
                 c.setHora(c.getHora().plusMinutes(tardanzasTotales));
                 c.setEstado("Retrasado");
                 citaOptional = this.save(c);
             }
         }
             
-            // // Actualizar las tardanzas de las citas restantes en el mismo turno
-            // for (Cita c : citasDelTurno) {
-            //     c.setTardanza(tardanzasTotales); // Establece la misma suma de tardanzas para todas las citas
-            //     // No estoy seguro de qué estás intentando hacer con esta línea. Si quieres guardar la cita actual, deberías usar 'c' en lugar de 'citaDb'
-            //     citaOptional = this.save(citaDb);
-            // }
         }
         return Optional.ofNullable(citaOptional);
+    }
+    
+
+
+
+    @Override
+    @Transactional
+    public List<Cita> findByFecha(Date fecha) {
+        return repository.findByFecha(fecha);
     }
     
 }

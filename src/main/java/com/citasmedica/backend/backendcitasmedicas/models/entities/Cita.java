@@ -1,5 +1,4 @@
 package com.citasmedica.backend.backendcitasmedicas.models.entities;
-import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.Date;
 import jakarta.persistence.Entity;
@@ -16,7 +15,7 @@ public class Cita {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long idCita;
     private String medico;
-    private LocalDate fecha;
+    private Date fecha;
     private String especialidad;
     private LocalTime hora;
     private String estado;
@@ -81,12 +80,13 @@ public class Cita {
     public void setTardanza(Long tardanza) {
         this.tardanza = tardanza;
     }
-    public LocalDate getFecha() {
+    public Date getFecha() {
         return fecha;
     }
-    public void setFecha(LocalDate fecha) {
+    public void setFecha(Date fecha) {
         this.fecha = fecha;
     }
+  
    
     
 
