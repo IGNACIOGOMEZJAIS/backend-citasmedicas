@@ -91,12 +91,12 @@ public class CitaController {
         return ResponseEntity.notFound().build();
     }
 
-    @GetMapping("/fecha/{fecha}")
-    public ResponseEntity<?> findByFecha(@PathVariable @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fecha) {
+    @GetMapping("/fecha/{fecha}/{medico}/{especialidad}")
+    public ResponseEntity<?> findByFecha(@PathVariable @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fecha,@PathVariable String medico, @PathVariable String especialidad) {
     
         List<Cita> citas = new ArrayList<>();
         for (Cita cita : service.findAll()) {
-            if (cita.getFecha().equals(fecha)) {
+            if (cita.getFecha().equals(fecha) && cita.getMedico().equals(medico) && cita.getEspecialidad().equals(especialidad)) {
                 citas.add(cita);
             }
         }

@@ -50,10 +50,13 @@ public class CitaServiceImpl implements CitasService {
             Long tardanzasTotales = 0L; 
             tardanzasTotales = tardanzasTotales + cita.getTardanza();
             LocalDate fechaCita = o.get().getFecha();
+            String medicoCita = o.get().getMedico();
+            String especialidadCita = o.get().getEspecialidad();
+    
            
             
             
-            List<Cita> citasDelTurno = (List<Cita>) repository.findByFecha(fechaCita);
+            List<Cita> citasDelTurno = (List<Cita>) repository.findByFecha(fechaCita,medicoCita,especialidadCita);
             
             // Calcular la suma de todas las tardanzas
             for (Cita c  : citasDelTurno) {
@@ -74,8 +77,8 @@ public class CitaServiceImpl implements CitasService {
 
     @Override
     @Transactional
-    public List<Cita> findByFecha(LocalDate fecha) {
-        return repository.findByFecha(fecha);
+    public List<Cita> findByFecha(LocalDate fecha, String medico, String especialidad) {
+        return repository.findByFecha(fecha,medico,especialidad);
     }
     
 }

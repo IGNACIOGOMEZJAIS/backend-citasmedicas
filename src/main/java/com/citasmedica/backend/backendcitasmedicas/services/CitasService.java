@@ -11,7 +11,7 @@ Optional<Cita> findById(Long idCita);
 Cita save(Cita cita);
 void remove(Long idCita);
 Optional<Cita>sumarTardanzasDeTurno(Cita cita,Long idCita);
-List<Cita> findByFecha(LocalDate fecha);
+List<Cita> findByFecha(LocalDate fecha, String medico, String especialidad);
 
 
 
