@@ -1,9 +1,11 @@
 package com.citasmedica.backend.backendcitasmedicas.controllers;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -89,16 +91,9 @@ public class CitaController {
         return ResponseEntity.notFound().build();
     }
 
-   @GetMapping("/fecha/{idCita}")
-public ResponseEntity<?> findByFecha(@PathVariable Long idCita) {
+    @GetMapping("/fecha/{fecha}")
+    public ResponseEntity<?> findByFecha(@PathVariable @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fecha) {
     
-    Optional<Cita> citaOptional = service.findById(idCita);
-    
-    if (citaOptional.isPresent()) {
-       
-        Date fecha = citaOptional.get().getFecha();
-        
-        
         List<Cita> citas = new ArrayList<>();
         for (Cita cita : service.findAll()) {
             if (cita.getFecha().equals(fecha)) {
@@ -111,10 +106,8 @@ public ResponseEntity<?> findByFecha(@PathVariable Long idCita) {
         } else {
             return ResponseEntity.notFound().build();
         }
-    } else {
-        return ResponseEntity.notFound().build();
     }
-}
+    
 
 
 }

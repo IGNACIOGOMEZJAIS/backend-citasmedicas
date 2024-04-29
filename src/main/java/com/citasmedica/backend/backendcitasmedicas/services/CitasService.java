@@ -1,6 +1,5 @@
 package com.citasmedica.backend.backendcitasmedicas.services;
-
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -12,7 +11,7 @@ Optional<Cita> findById(Long idCita);
 Cita save(Cita cita);
 void remove(Long idCita);
 Optional<Cita>sumarTardanzasDeTurno(Cita cita,Long idCita);
-List<Cita> findByFecha(Date fecha);
+List<Cita> findByFecha(LocalDate fecha);
 
 
 

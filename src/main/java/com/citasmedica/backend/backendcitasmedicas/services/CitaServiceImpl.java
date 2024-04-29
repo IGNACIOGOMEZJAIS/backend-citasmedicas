@@ -1,5 +1,5 @@
 package com.citasmedica.backend.backendcitasmedicas.services;
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,16 +49,16 @@ public class CitaServiceImpl implements CitasService {
             Cita citaDb = o.orElseThrow();
             Long tardanzasTotales = 0L; 
             tardanzasTotales = tardanzasTotales + cita.getTardanza();
-            Date fechaCita = cita.getFecha();
-            System.out.println(fechaCita);
+            LocalDate fechaCita = o.get().getFecha();
+           
             
             
-            List<Cita> citasDelTurno = (List<Cita>) repository.findAll();
+            List<Cita> citasDelTurno = (List<Cita>) repository.findByFecha(fechaCita);
             
             // Calcular la suma de todas las tardanzas
             for (Cita c  : citasDelTurno) {
                 c.setEstado("Terminado");
-                if (!c.getIdCita().equals(idCita) ) {
+                if (!c.getIdCita().equals(idCita)) {
                 c.setHora(c.getHora().plusMinutes(tardanzasTotales));
                 c.setEstado("Retrasado");
                 citaOptional = this.save(c);
@@ -74,7 +74,7 @@ public class CitaServiceImpl implements CitasService {
 
     @Override
     @Transactional
-    public List<Cita> findByFecha(Date fecha) {
+    public List<Cita> findByFecha(LocalDate fecha) {
         return repository.findByFecha(fecha);
     }
     
