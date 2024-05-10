@@ -107,7 +107,19 @@ public class CitaController {
             return ResponseEntity.notFound().build();
         }
     }
-    
+    @PutMapping("/citafinish/{idCita}")
+    public ResponseEntity<?> finishCita(@PathVariable Long idCita){
+
+        Optional<Cita> o = service.findById(idCita);
+        if(o.isPresent()){
+            Cita citaDb = o.orElseThrow();
+            citaDb.setEstado("Terminado");
+            return ResponseEntity.status(HttpStatus.CREATED).body(service.save(citaDb)); 
+
+        }
+        return ResponseEntity.notFound().build();
+
+    }
 
 
 }

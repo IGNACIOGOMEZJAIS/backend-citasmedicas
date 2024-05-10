@@ -61,7 +61,7 @@ public class CitaServiceImpl implements CitasService {
             // Calcular la suma de todas las tardanzas
             for (Cita c  : citasDelTurno) {
                 c.setEstado("Terminado");
-                if (!c.getIdCita().equals(idCita)) {
+                if (!c.getIdCita().equals(idCita) ) {
                 c.setHora(c.getHora().plusMinutes(tardanzasTotales));
                 c.setEstado("Retrasado");
                 citaOptional = this.save(c);
