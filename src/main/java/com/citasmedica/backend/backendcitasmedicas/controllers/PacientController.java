@@ -54,7 +54,7 @@ public class PacientController {
             if(o.isPresent()){
              Pacient pacientDb = o.orElseThrow();
              pacientDb.setEmail(pacient.getEmail());
-             pacientDb.setDni(pacient.getDni());
+             pacientDb.setNombreApe(pacient.getNombreApe());
                 return ResponseEntity.status(HttpStatus.CREATED).body(service.save(pacientDb)); 
     
             }

@@ -1,14 +1,17 @@
 package com.citasmedica.backend.backendcitasmedicas.models.entities;
-
 import java.util.List;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
+
 
 @Entity
 @Table(name="pacients")
@@ -16,6 +19,12 @@ public class Pacient {
 @Id
 @GeneratedValue(strategy = GenerationType.IDENTITY)
 private Long id;
+
+@ManyToMany
+@JoinTable(name= "pacient_roles",joinColumns = @JoinColumn(name="pacient_id"
+), inverseJoinColumns = @JoinColumn(name="role_id"),
+uniqueConstraints = {@UniqueConstraint(columnNames = {"pacient_id","role_id"})})
+private List<Role> roles;
 
 @Column(unique = true)
 private Long dni;
@@ -77,6 +86,15 @@ public String getNombreApe() {
 public void setNombreApe(String nombreApe) {
     this.nombreApe = nombreApe;
 }
+
+public List<Role> getRoles() {
+    return roles;
+}
+
+public void setRoles(List<Role> roles) {
+    this.roles = roles;
+}
+
 
 
 

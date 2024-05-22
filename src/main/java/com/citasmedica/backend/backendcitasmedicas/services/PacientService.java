@@ -14,4 +14,5 @@ public interface PacientService {
     Pacient save(Pacient pacient);
 
     void remove(Long id);
+    Optional<Pacient> findByDni(Long dni);
 }

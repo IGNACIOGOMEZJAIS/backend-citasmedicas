@@ -27,6 +27,7 @@ public class CitaServiceImpl implements CitasService {
     public Optional<Cita> findById(Long idCita) {
         return repository.findById(idCita);
     }
+   
 
     @Override
     @Transactional
