@@ -22,8 +22,6 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
-
-
 public class JwtValidationFilter extends BasicAuthenticationFilter {
 
     public JwtValidationFilter(AuthenticationManager authenticationManager) {
@@ -37,34 +35,36 @@ public class JwtValidationFilter extends BasicAuthenticationFilter {
         if (header == null || !header.startsWith(TokenJwtConfig.PREFIX_TOKEN)) {
             chain.doFilter(request, response);
             return;
-
         }
         String token = header.replace(TokenJwtConfig.PREFIX_TOKEN, "");
         try {
             Claims claims = Jwts.parser().setSigningKey(SECRET_KEY).build()
                     .parseClaimsJws(token)
                     .getBody();
-            Object authoritiesClaims = claims.get("authorities");
-         
-            String dni = claims.getSubject();
-         
-            Collection<? extends GrantedAuthority> authorities = Arrays.asList(
-                    new ObjectMapper().addMixIn(SimpleGrantedAuthority.class, SimpleGrantedAuthorityJsonCreator.class)
-                            .readValue(authoritiesClaims.toString().getBytes(), SimpleGrantedAuthority[].class));
-            UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(dni, null,
-                    authorities);
-            SecurityContextHolder.getContext().setAuthentication(authentication);
-            chain.doFilter(request, response);
-        } catch (JwtException e) {
-            Map<String, String> body = new HashMap<>();
-            body.put("error", e.getMessage());
-            body.put("error", "Token invalido");
+                    Object authoritiesClaims = claims.get("authorities");
 
-            response.getWriter().write(new ObjectMapper().writeValueAsString(body));
-            response.setStatus(401);
-            response.setContentType("application/json");
-
+                    String dni = claims.getSubject();
+                    String nombreApe = claims.get("nombreApe", String.class);
+        
+                    // Añadir el ID del paciente y el nombre completo como atributos en la solicitud
+                    request.setAttribute("nombreApe", nombreApe);
+                    request.setAttribute("dni", dni);
+        
+                    Collection<? extends GrantedAuthority> authorities = Arrays.asList(
+                            new ObjectMapper().addMixIn(SimpleGrantedAuthority.class, SimpleGrantedAuthorityJsonCreator.class)
+                                    .readValue(authoritiesClaims.toString().getBytes(), SimpleGrantedAuthority[].class));
+                    UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(dni, null,
+                            authorities);
+                    SecurityContextHolder.getContext().setAuthentication(authentication);
+                    chain.doFilter(request, response);
+                } catch (JwtException e) {
+                    Map<String, String> body = new HashMap<>();
+                    body.put("error", e.getMessage());
+                    body.put("error", "Token invalido");
+        
+                    response.getWriter().write(new ObjectMapper().writeValueAsString(body));
+                    response.setStatus(401);
+                    response.setContentType("application/json");
+                }
+            }
         }
-
-    }
-}
