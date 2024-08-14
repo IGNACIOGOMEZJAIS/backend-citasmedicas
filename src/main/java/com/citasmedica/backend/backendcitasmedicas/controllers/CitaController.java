@@ -24,6 +24,7 @@ import com.citasmedica.backend.backendcitasmedicas.models.entities.Pacient;
 import com.citasmedica.backend.backendcitasmedicas.services.CitasService;
 import com.citasmedica.backend.backendcitasmedicas.services.EmailService;
 import com.citasmedica.backend.backendcitasmedicas.services.PacientService;
+import com.citasmedica.backend.backendcitasmedicas.services.PdfService;
 
 @RestController
 @RequestMapping("/citas")
@@ -38,6 +39,9 @@ public class CitaController {
 
     @Autowired
     private EmailService emailService;
+
+    @Autowired
+    private PdfService pdfService;
 
     @GetMapping
     public List<Cita> list() {
@@ -89,46 +93,53 @@ public class CitaController {
     }
 
     @PutMapping("/citacurso/updateReceta/{idCita}")
-    public ResponseEntity<?> updateReceta(@RequestBody Cita cita, @PathVariable Long idCita) {
-        Optional<Cita> o = service.findById(idCita);
+public ResponseEntity<?> updateReceta(@RequestBody Cita cita, @PathVariable Long idCita) {
+    Optional<Cita> o = service.findById(idCita);
 
-        if (o.isPresent()) {
-            Cita citaDb = o.orElseThrow();
-            citaDb.setRecetaMedica(cita.getRecetaMedica());
-            service.save(citaDb);
-            Optional<Pacient> pacientOpt = pacientService.findById(citaDb.getIdPaciente());
-            if (!pacientOpt.isPresent()) {
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Paciente no encontrado");
-            }
-            Pacient pacient = pacientOpt.get();
-
-            try {
-                String subject = "Receta Médica";
-                String firma = "\n\n" +
-                        "Dr: Ernesto Arturo Gomez\n" +
-                        "\n" +
-                        "MD: Otorrinolaringólogo\n" +
-                        "MN: 3142\n";
-
-                String body = "Estimado/a " + pacient.getNombreApe() + ",\n\n" + "DNI:" + pacient.getDni()+","+
-                        "\n\n" +
-                        "Detalles de Receta:\n " +
-                        cita.getRecetaMedica() +"."+ "\n"
-                        + "\n\n" + "Fecha:" + "\n" +
-                        citaDb.getFecha()+"." + "\n\n" +
-                        "\n" +
-                        firma;
-                emailService.sendEmail(pacient.getEmail(), subject, body);
-            } catch (IOException e) {
-                e.printStackTrace();
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                        .body("Error al enviar el correo electrónico");
-            }
-
-            return ResponseEntity.status(HttpStatus.CREATED).body(citaDb);
+    if (o.isPresent()) {
+        Cita citaDb = o.orElseThrow();
+        citaDb.setRecetaMedica(cita.getRecetaMedica());
+        service.save(citaDb);
+        Optional<Pacient> pacientOpt = pacientService.findById(citaDb.getIdPaciente());
+        if (!pacientOpt.isPresent()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Paciente no encontrado");
         }
-        return ResponseEntity.notFound().build();
+        Pacient pacient = pacientOpt.get();
+
+        try {
+            String subject = "Receta Médica";
+            String firma =
+                    "Dr: Ernesto Arturo Gomez " +
+                    
+                    "MD: Otorrinolaringólogo " +
+                    "M.P Nº1198 – M.E. Nº364";
+
+            String body = "Estimado/a " + pacient.getNombreApe() + "," + " DNI:" + pacient.getDni() + "," +
+                    
+                    " Adjuntamos su receta medica," +
+                     
+                      " Fecha:" + 
+                    citaDb.getFecha() + "," +" Atentamente,\n" +
+
+                                "El equipo de Citas Médicas. Dejaremos una breve encuesta que nos ayudaria muchisimo a mejorar nuestro servicio. https://docs.google.com/forms/d/e/1FAIpQLSfn--uVmCKy4HLALIaoiyNbbP_jBZYT91SQZZ9HJjXXSdCOng/viewform?usp=sf_link";
+
+            // Generar el PDF
+            byte[] pdfContent = pdfService.generatePdf(pacient.getNombreApe(), pacient.getDni().toString(),
+                    cita.getRecetaMedica(), citaDb.getFecha().toString(), firma);
+
+            // Enviar el correo con el PDF adjunto
+            emailService.sendEmailWithAttachment(pacient.getEmail(), subject, body, pdfContent);
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error al enviar el correo electrónico");
+        }
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(citaDb);
     }
+    return ResponseEntity.notFound().build();
+}
 
     @DeleteMapping("/{idCita}")
     public ResponseEntity<?> remove(@PathVariable Long idCita) {
