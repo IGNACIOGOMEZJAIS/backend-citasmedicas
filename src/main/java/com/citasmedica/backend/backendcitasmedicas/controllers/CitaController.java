@@ -105,18 +105,17 @@ public class CitaController {
             try {
                 String subject = "Receta Médica";
                 String firma = "\n\n" +
-                        "Dr. Ernesto Arturo Gomez\n" +
+                        "Dr: Ernesto Arturo Gomez\n" +
                         "\n" +
-                        "MD: Otorrino\n" +
-                        "MN: 3142\n" +
-                        "Firma";
+                        "MD: Otorrinolaringólogo\n" +
+                        "MN: 3142\n";
 
-                String body = "Estimado/a " + pacient.getNombreApe() + ",\n\n" + "DNI:" + pacient.getDni() +
+                String body = "Estimado/a " + pacient.getNombreApe() + ",\n\n" + "DNI:" + pacient.getDni()+","+
                         "\n\n" +
-                        ",Detalles de Receta:\n " +
-                        cita.getRecetaMedica() + "." + "\n"
+                        "Detalles de Receta:\n " +
+                        cita.getRecetaMedica() +"."+ "\n"
                         + "\n\n" + "Fecha:" + "\n" +
-                        citaDb.getFecha() + "\n\n" +
+                        citaDb.getFecha()+"." + "\n\n" +
                         "\n" +
                         firma;
                 emailService.sendEmail(pacient.getEmail(), subject, body);

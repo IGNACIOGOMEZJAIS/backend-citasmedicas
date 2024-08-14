@@ -80,7 +80,7 @@ public class CitaServiceImpl implements CitasService {
                         String subject = "Turno Retrasado";
 
                         String body = "Estimado/a " + pacient.getNombreApe() + ",\n\n" +
-                                "DNI: " + pacient.getDni() + "\n\n" +
+                                "DNI: " + pacient.getDni()+","+"\n\n" +
 
                                 "Su turno ha sido retrasado para las " + c.getHora() + " horas.\n\n" +
 
