@@ -108,20 +108,16 @@ public ResponseEntity<?> updateReceta(@RequestBody Cita cita, @PathVariable Long
 
         try {
             String subject = "Receta Médica";
-            String firma =
-                    "Dr: Ernesto Arturo Gomez " +
-                    
-                    "MD: Otorrinolaringólogo " +
-                    "M.P Nº1198 – M.E. Nº364";
+            String firma = "M.P. Nº1198 – M.E. Nº364";
 
-            String body = "Estimado/a " + pacient.getNombreApe() + "," + " DNI:" + pacient.getDni() + "," +
-                    
-                    " Adjuntamos su receta medica," +
-                     
-                      " Fecha:" + 
-                    citaDb.getFecha() + "," +" Atentamente,\n" +
-
-                                "El equipo de Citas Médicas. Dejaremos una breve encuesta que nos ayudaria muchisimo a mejorar nuestro servicio. https://docs.google.com/forms/d/e/1FAIpQLSfn--uVmCKy4HLALIaoiyNbbP_jBZYT91SQZZ9HJjXXSdCOng/viewform?usp=sf_link";
+            String body = "Estimado/a " + pacient.getNombreApe() + "," +
+            "\nDNI: " + pacient.getDni() + "," +
+            "\n\nAdjuntamos su receta médica." +
+            "\n\nFecha: " + citaDb.getFecha() + 
+            "\n\nAtentamente," +
+            "\n\nEl equipo de Citas Médicas." +
+            "\n\nNos sería de gran ayuda si pudieras completar una breve encuesta para mejorar nuestro servicio. Puedes acceder a la encuesta en el siguiente enlace: " +
+            "https://docs.google.com/forms/d/e/1FAIpQLSfn--uVmCKy4HLALIaoiyNbbP_jBZYT91SQZZ9HJjXXSdCOng/viewform?usp=sf_link";
 
             // Generar el PDF
             byte[] pdfContent = pdfService.generatePdf(pacient.getNombreApe(), pacient.getDni().toString(),

@@ -10,8 +10,6 @@ import org.springframework.stereotype.Service;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 
 @Service
 public class PdfService {
@@ -27,38 +25,55 @@ public class PdfService {
             // Crear un flujo de contenido para la página
             try (PDPageContentStream contentStream = new PDPageContentStream(document, page)) {
 
-                // Escribir el contenido en el PDF
+                // Escribir el nombre del doctor
                 contentStream.setFont(PDType1Font.HELVETICA_BOLD, 18);
                 contentStream.beginText();
-                contentStream.setLeading(14.5f);
                 contentStream.newLineAtOffset(50, 750);
-
                 contentStream.showText("DR. ERNESTO ARTURO GÓMEZ");
-                contentStream.newLine();
+                contentStream.endText();
 
-                contentStream.setFont(PDType1Font.HELVETICA, 12);
+                // Escribir la especialidad en líneas separadas
+                contentStream.setFont(PDType1Font.HELVETICA_BOLD, 14);
+                contentStream.beginText();
+                contentStream.setLeading(14.5f);
+                contentStream.newLineAtOffset(50, 730); // Ajustar la posición vertical
+                contentStream.showText("ESPECIALISTA EN OTORRINOLARINGOLOGÍA");
                 contentStream.newLine();
+                contentStream.showText("CIRUGÍA MAXILOFACIAL");
+                contentStream.newLine();
+                contentStream.showText("(NARIZ - GARGANTA - OÍDO)");
+                contentStream.newLine();
+                contentStream.showText(firma);
+                contentStream.endText();
+
+                // Dibujar la línea negra debajo del texto anterior
+                contentStream.setLineWidth(1.0f); // Grosor de la línea
+                contentStream.moveTo(50, 680); // Punto de inicio de la línea
+                contentStream.lineTo(550, 680); // Punto de final de la línea (con el mismo valor Y)
+                contentStream.stroke(); // Dibujar la línea
+
+                // Continuar escribiendo el resto del contenido
+                contentStream.beginText();
+                contentStream.setFont(PDType1Font.HELVETICA, 12);
+                contentStream.setLeading(14.5f);
+                contentStream.newLineAtOffset(50, 650); // Ajustar la posición vertical
                 contentStream.showText("Paciente: " + pacienteNombre);
                 contentStream.newLine();
                 contentStream.showText("DNI: " + dni);
                 contentStream.newLine();
-                contentStream.showText("Detalles de la Receta: " +receta);
+                contentStream.showText("Detalles de la Receta: " + receta);
                 contentStream.newLine();
                 contentStream.showText("Fecha: " + fecha);
                 contentStream.newLine();
-                contentStream.newLine();
-                contentStream.showText(firma);
-
                 contentStream.endText();
 
                 // Agregar la firma como imagen
                 String imagePath = Paths.get("src", "img", "Screenshot 2024-08-14 131800.png").toAbsolutePath()
                         .toString();
                 PDImageXObject pdImage = PDImageXObject.createFromFile(imagePath, document);
-                contentStream.drawImage(pdImage, 50, 300, 200, 100); 
+                contentStream.drawImage(pdImage, 50, 300, 200, 100);
             }
 
-           
             document.save(baos);
         } catch (IOException e) {
             e.printStackTrace();
